@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>EngFit — 모의고사 단어시험 Lv.2 (장문독해)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { font-size: 16px; }
+  body { font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #f1f5f9; min-height: 100vh; }
+  .en { font-family: 'Patrick Hand', 'Noto Sans KR', cursive; }
+  .wrap { max-width: 440px; margin: 0 auto; padding: 20px 16px 80px; }
+  .brand { display: inline-flex; align-items: baseline; gap: 2px; font-family: 'Patrick Hand', cursive; font-size: 1.5rem; letter-spacing: 0.5px; }
+  .brand .eng { color: #3b82f6; } .brand .fit { color: #f97316; }
+  .brand-sm { font-size: 1.05rem; }
+  .hidden { display: none !important; }
+  .btn { display: block; width: 100%; padding: 17px; border-radius: 14px; border: none; cursor: pointer; background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: #fff; font-size: 1.1rem; font-weight: 700; font-family: inherit; }
+  .btn:disabled { background: #334155; color: #64748b; cursor: default; }
+  .btn.ghost { background: #1e293b; border: 1px solid #334155; color: #94a3b8; font-weight: 500; }
+
+  /* ── start ── */
+  #start-screen { padding-top: 42px; text-align: center; }
+  .badge { font-size: 0.8rem; letter-spacing: 3px; color: #64748b; text-transform: uppercase; margin: 22px 0 8px; }
+  #start-screen h1 { font-size: 1.85rem; font-weight: 900; line-height: 1.35; }
+  .sub { font-size: 0.92rem; color: #94a3b8; margin-top: 10px; }
+  .name-box { margin: 30px 0 16px; text-align: left; }
+  .name-box label { font-size: 0.82rem; color: #94a3b8; display: block; margin-bottom: 6px; }
+  input[type=text] { width: 100%; padding: 14px 16px; font-size: 1.05rem; border-radius: 12px; border: 1px solid #334155; background: #1e293b; color: #f1f5f9; outline: none; font-family: inherit; }
+  input[type=text]:focus { border-color: #3b82f6; }
+  .info { margin-top: 22px; padding: 15px 18px; border-radius: 12px; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15); font-size: 0.83rem; color: #94a3b8; line-height: 1.9; text-align: left; }
+  .sec-label { font-size: 0.82rem; color: #94a3b8; display: block; margin: 20px 0 8px; text-align: left; }
+  .sec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .sec-btn { padding: 12px 6px; border-radius: 12px; border: 1.5px solid #334155; background: #1e293b; color: #cbd5e1; cursor: pointer; font-family: inherit; font-size: 0.88rem; font-weight: 500; line-height: 1.35; transition: border-color 0.12s, background 0.12s; }
+  .sec-btn .range { display: block; font-size: 0.72rem; color: #64748b; }
+  .sec-btn.on { border-color: #3b82f6; background: rgba(59,130,246,0.14); color: #f8fafc; font-weight: 700; }
+  .sec-btn.on .range { color: #93c5fd; }
+
+  /* ── quiz ── */
+  #topbar { position: sticky; top: 0; z-index: 10; background: rgba(30,41,59,0.96); backdrop-filter: blur(4px); border-bottom: 1px solid #334155; padding: 9px 16px 10px; }
+  .topline { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; max-width: 440px; margin-left: auto; margin-right: auto; }
+  .topline .meta { font-size: 0.8rem; color: #94a3b8; font-variant-numeric: tabular-nums; }
+  .pbar { height: 4px; background: #334155; border-radius: 2px; overflow: hidden; max-width: 440px; margin: 0 auto; }
+  .pbar > div { height: 100%; width: 0%; background: linear-gradient(90deg,#3b82f6,#8b5cf6); transition: width 0.25s; }
+  .qcard { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 26px 20px; margin-bottom: 16px; }
+  .qhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .qno { font-size: 0.78rem; font-weight: 600; letter-spacing: 1px; }
+  .qtype { font-size: 0.72rem; font-weight: 500; padding: 3px 9px; border-radius: 6px; }
+  .qword { font-weight: 700; line-height: 1.4; word-break: keep-all; }
+  .qword.ek { font-family: 'Patrick Hand', cursive; font-size: 2.1em; font-weight: 400; }
+  .qword.ke { font-size: 1.65em; }
+  .choice { display: flex; align-items: center; gap: 12px; width: 100%; padding: 13px 16px; margin-bottom: 9px; border-radius: 12px; border: 1.5px solid #334155; background: #1e293b; cursor: pointer; text-align: left; color: #cbd5e1; transition: border-color 0.12s, background 0.12s; font-family: inherit; }
+  .choice .cnum { flex-shrink: 0; width: 24px; text-align: center; font-size: 1.05rem; color: #94a3b8; }
+  .choice .ctext { line-height: 1.45; word-break: keep-all; }
+  .choice .ctext.ko { font-size: 0.96em; font-family: 'Noto Sans KR', sans-serif; }
+  .choice .ctext.en { font-size: 1.44em; font-family: 'Patrick Hand', cursive; }
+  .choice.sel-ek { border-color: #3b82f6; background: rgba(59,130,246,0.14); color: #f8fafc; }
+  .choice.sel-ek .cnum { color: #3b82f6; }
+  .choice.sel-ke { border-color: #f97316; background: rgba(249,115,22,0.14); color: #f8fafc; }
+  .choice.sel-ke .cnum { color: #f97316; }
+  #prev-btn { margin-top: 14px; }
+  .kbd-hint { text-align: center; font-size: 0.72rem; color: #475569; margin-top: 14px; }
+
+  /* ── result ── */
+  #result-screen { padding-top: 30px; }
+  .rcard { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 26px 20px; margin-bottom: 14px; text-align: center; }
+  .score-big { font-size: 2.6rem; font-weight: 900; margin: 8px 0 2px; background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .score-sub { font-size: 0.95rem; color: #94a3b8; }
+  #submit-status { font-size: 0.88rem; margin: 14px 0 4px; min-height: 1.3em; }
+  #kakao-btn { margin-top: 10px; background: #fee500; color: #191919; }
+  #kakao-btn.done { background: #22c55e; color: #fff; }
+  .copy-area { width: 100%; margin-top: 10px; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: #cbd5e1; font-size: 0.82rem; line-height: 1.6; font-family: inherit; }
+  .wrong-title { font-size: 1rem; font-weight: 700; margin: 24px 0 12px; color: #f8fafc; text-align: left; }
+  .witem { background: #1e293b; border: 1px solid #334155; border-left: 4px solid #ef4444; border-radius: 12px; padding: 14px 16px; margin-bottom: 9px; text-align: left; }
+  .witem .wq { font-weight: 700; margin-bottom: 5px; }
+  .witem .wq .en { font-size: 1.3em; font-weight: 400; }
+  .witem .wrow { font-size: 0.86rem; line-height: 1.7; }
+  .witem .my { color: #f87171; } .witem .ans { color: #4ade80; font-weight: 600; }
+  .witem .wrow .en { font-size: 1.15em; }
+  .allok { padding: 26px; text-align: center; color: #4ade80; font-size: 1.05rem; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- 시작 화면 -->
+<div class="wrap" id="start-screen">
+  <span class="brand"><span class="eng">Eng</span><span class="fit">Fit</span></span>
+  <div class="badge">Vocabulary · Lv.2 · 모의고사</div>
+  <h1>모의고사 단어시험 <span style="color:#f97316">Lv.2</span><br><span style="font-size:0.5em;font-weight:700;color:#94a3b8">장문독해</span></h1>
+  <div class="sub" id="start-sub"></div>
+  <div class="name-box">
+    <label for="name-input">이름</label>
+    <input type="text" id="name-input" placeholder="이름을 입력하세요" maxlength="20" autocomplete="off">
+  </div>
+  <span class="sec-label">영역 선택 (프린트 순서 · 50개씩)</span>
+  <div class="sec-grid" id="sec-grid"></div>
+  <button class="btn" id="start-btn" disabled style="margin-top:18px">시험 시작</button>
+  <div class="info">
+    · 단어 프린트 순서 그대로 50개씩 영역 분할<br>
+    · 영어→한글, 한글→영어 랜덤 혼합 4지선다<br>
+    · 답을 누르면 0.25초 후 자동으로 다음 문제<br>
+    · 이전 버튼으로 돌아가서 답 변경 가능 · 키보드 1~4, ←<br>
+    · 끝나면 결과가 자동 전송되고, 카톡 복사도 가능해요
+  </div>
+</div>
+
+<!-- 문제 화면 -->
+<div id="quiz-screen" class="hidden">
+  <div id="topbar">
+    <div class="topline">
+      <span class="brand brand-sm"><span class="eng">Eng</span><span class="fit">Fit</span></span>
+      <span class="meta" id="prog-text"></span>
+      <span class="meta" id="timer">0:00</span>
+    </div>
+    <div class="pbar"><div id="pfill"></div></div>
+  </div>
+  <div class="wrap">
+    <div class="qcard">
+      <div class="qhead">
+        <span class="qno" id="qno"></span>
+        <span class="qtype" id="qtype"></span>
+      </div>
+      <div class="qword" id="qword"></div>
+    </div>
+    <div id="choices"></div>
+    <button class="btn ghost" id="prev-btn">← 이전 문제</button>
+    <div class="kbd-hint">1 ~ 4 : 답 선택 &nbsp;·&nbsp; ← : 이전 문제</div>
+  </div>
+</div>
+
+<!-- 결과 화면 -->
+<div class="wrap hidden" id="result-screen">
+  <div style="text-align:center"><span class="brand"><span class="eng">Eng</span><span class="fit">Fit</span></span></div>
+  <div class="rcard" style="margin-top:16px">
+    <div style="font-size:0.85rem;color:#94a3b8" id="r-name"></div>
+    <div class="score-big" id="r-score"></div>
+    <div class="score-sub" id="r-sub"></div>
+    <div id="submit-status"></div>
+    <button class="btn" id="kakao-btn">📋 결과 복사해서 카톡으로 보내기</button>
+    <textarea class="copy-area hidden" id="copy-area" rows="7" readonly></textarea>
+  </div>
+  <div class="wrong-title" id="wrong-title"></div>
+  <div id="wrong-list"></div>
+  <button class="btn ghost" id="retry-btn" style="margin-top:18px">다시 풀기</button>
+</div>
+
+<script>
+"use strict";
+
+/* ══════ 결과 자동 전송 (영핏 공통) ══════ */
+var ENGFIT_SUBMIT_URL = "https://script.google.com/macros/s/AKfycbz5IC3cEtaBGW10qZhrjwtjdtGugmcmYb4ZTHS4k-1LOqTRYzW-LfoAPyFB_ShjAqNp/exec";
+
+async function engfitSubmit(r) {
+  var body = JSON.stringify(r);
+  try {
+    var res = await fetch(ENGFIT_SUBMIT_URL, { method: "POST", body: body });
+    var j = await res.json();
+    return j.ok === true;
+  } catch (e) {
+    try {
+      await fetch(ENGFIT_SUBMIT_URL, { method: "POST", mode: "no-cors", body: body });
+      return true;
+    } catch (e2) { return false; }
+  }
+}
+
+var _engfitSent = false;
+async function engfitSubmitWithStatus(r) {
+  if (_engfitSent) return; _engfitSent = true;
+  var el = document.getElementById("submit-status");
+  el.textContent = "결과 전송 중...";
+  el.style.color = "#94a3b8";
+  var ok = await engfitSubmit(r);
+  if (ok) { el.textContent = "✓ 결과가 지나티처에게 자동 전송되었어요"; el.style.color = "#4ade80"; }
+  else { el.textContent = "전송이 안 됐어요 — 아래 버튼으로 복사해서 카톡으로 보내주세요!"; el.style.color = "#f87171"; }
+}
+
+/* ══════ 단어 데이터 ══════ */
+var WORDS = [{"en": "pollution", "ko": "공해"}, {"en": "form", "ko": "형태"}, {"en": "major", "ko": "주요한"}, {"en": "source", "ko": "원인, 근원"}, {"en": "unwelcome", "ko": "반갑지 않은"}, {"en": "actually", "ko": "실제로"}, {"en": "deafening", "ko": "귀가 먹먹한, 귀청이 터질 듯한"}, {"en": "capital", "ko": "대문자의; 대문자"}, {"en": "mere", "ko": "단순한, 단지 ~에 지나지 않는"}, {"en": "emphasize", "ko": "강조하다"}, {"en": "apply to", "ko": "~에 적용되다"}, {"en": "annoy", "ko": "짜증나게 하다"}, {"en": "elementary school", "ko": "초등학교"}, {"en": "practice", "ko": "관행"}, {"en": "journal", "ko": "정기 간행물"}, {"en": "magazine", "ko": "잡지"}, {"en": "dialogue", "ko": "대화"}, {"en": "primary", "ko": "주요한"}, {"en": "indistinguishable", "ko": "구별하기 어려운"}, {"en": "supporting", "ko": "뒷받침하는"}, {"en": "secondary", "ko": "이차적인, 부차적인"}, {"en": "detail", "ko": "세부 사항"}, {"en": "indicate", "ko": "나타내다, 지칭하다"}, {"en": "accurate", "ko": "정확한"}, {"en": "improve", "ko": "향상시키다"}, {"en": "handwriting", "ko": "필체, 필적"}, {"en": "dos and don’ts", "ko": "할 것과 하지 말아야 할 것"}, {"en": "sandpit", "ko": "모래 놀이터"}, {"en": "nod", "ko": "꾸벅꾸벅 졸다"}, {"en": "beside", "ko": "~의 옆에서"}, {"en": "imitate", "ko": "따라하다, 모방하다"}, {"en": "whirr", "ko": "윙하는 소리; (모터 따위가) 윙하고 돌다"}, {"en": "reach", "ko": "다다르다, 도달하다"}, {"en": "peak", "ko": "꼭대기, 절정"}, {"en": "excitement", "ko": "흥분"}, {"en": "wave", "ko": "손을 흔들다"}, {"en": "admirer", "ko": "숭배자"}, {"en": "sight", "ko": "시야"}, {"en": "point", "ko": "가리키다"}, {"en": "abandon", "ko": "버리다, 포기하다"}, {"en": "including", "ko": "~을 포함하여"}, {"en": "peer out", "ko": "내다 보다"}, {"en": "wheel", "ko": "운전대"}, {"en": "rear", "ko": "뒤, 뒤쪽"}, {"en": "yell", "ko": "소리치다"}, {"en": "accompany", "ko": "~와 함께 발생하다, ~에 수반하여 일어나다"}, {"en": "contemporary", "ko": "현대의, 동시대의"}, {"en": "cognitive", "ko": "인지적인"}, {"en": "complicated", "ko": "복잡한"}, {"en": "intense", "ko": "치열한, 강렬한"}, {"en": "all expenses paid", "ko": "비용이 전액 지원되는"}, {"en": "mighty", "ko": "굉장히, 대단히"}, {"en": "seal", "ko": "인장, 봉인"}, {"en": "title deed", "ko": "부동산 권리 증서"}, {"en": "casually", "ko": "무심코, 아무 생각 없이"}, {"en": "bid ~ farewell", "ko": "~에게 작별인사를 하다"}, {"en": "daydream", "ko": "공상에 잠기다"}, {"en": "state-of-the-art", "ko": "최신식의"}, {"en": "accompany", "ko": "동행하다, 함께 가다"}, {"en": "uneventfully", "ko": "특별한 일 없이, 변함없이"}, {"en": "whip", "ko": "(바람이) 세차게 불다"}, {"en": "suburb", "ko": "교외"}, {"en": "roar", "ko": "울부짖는 듯한 소리"}, {"en": "whirl", "ko": "소용돌이치다"}, {"en": "overhead", "ko": "머리 위에(서)"}, {"en": "deadly", "ko": "생명을 앗아가는"}, {"en": "deafening", "ko": "귀청이 터질 듯한"}, {"en": "panicked", "ko": "겁에 질려 어쩔 줄 모르는 채"}, {"en": "collapse", "ko": "무너지다"}, {"en": "narrowly", "ko": "간신히, 아슬아슬하게"}, {"en": "nestle", "ko": "(아늑하게) 자리 잡도록 하다"}, {"en": "death toll", "ko": "사망자 수"}, {"en": "mount", "ko": "증가하다"}, {"en": "plumber", "ko": "배관공"}, {"en": "construction", "ko": "건설"}, {"en": "late-night call", "ko": "심야작업 요청"}, {"en": "take advantage of", "ko": "~를 (부당하게) 이용하다"}, {"en": "leave", "ko": "휴가"}, {"en": "function", "ko": "일하다, 기능하다"}, {"en": "supervisor", "ko": "관리자"}, {"en": "able", "ko": "능력 있는"}, {"en": "communicator", "ko": "의사 전달자"}, {"en": "sort out", "ko": "~을 해결하다"}, {"en": "workload", "ko": "작업량"}, {"en": "consistent", "ko": "일관된, 한결같은"}, {"en": "driver", "ko": "골프에서 치는 부분이 목재로 된 골프채"}, {"en": "possession", "ko": "소유물"}, {"en": "look toward", "ko": "~쪽으로 향하다"}, {"en": "take notes", "ko": "기록[메모]하다"}, {"en": "crust", "ko": "표면, 딱딱한 층; 딱딱한 껍질이 생기게 하다"}, {"en": "snowbank", "ko": "눈더미"}, {"en": "be chilled to the bone", "ko": "몹시 춥다, 뼛속까지 얼어붙다"}, {"en": "thereafter", "ko": "그 후에"}, {"en": "take to heart", "ko": "마음에 새기다"}, {"en": "shortcut", "ko": "지름길"}, {"en": "firsthand", "ko": "직접적인"}, {"en": "biomimicry", "ko": "생물체의 특성, 구조 및 원리를 산업 전반에 적용시키는 것"}, {"en": "come up with", "ko": "생각해내다"}, {"en": "sonar", "ko": "수중 음파 탐지기"}, {"en": "bounce", "ko": "반사시키다"}, {"en": "working", "ko": "작동, 운용, 작용"}, {"en": "reality check", "ko": "현실 확인"}, {"en": "stubbornly", "ko": "완강하게"}, {"en": "cling to", "ko": "~에 달라붙다"}, {"en": "fabric", "ko": "직물"}, {"en": "loop", "ko": "고리"}, {"en": "fastener", "ko": "잠금장치"}, {"en": "crippled", "ko": "불구의"}, {"en": "convention", "ko": "대회, 협의회"}, {"en": "inadequate", "ko": "불충분한, 부적당한"}, {"en": "with abandon", "ko": "거리낌 없이"}, {"en": "soiled", "ko": "때묻은"}, {"en": "board", "ko": "타다"}, {"en": "operation", "ko": "수술"}, {"en": "commander", "ko": "사령관"}, {"en": "forces", "ko": "군대"}, {"en": "officer", "ko": "장교"}, {"en": "appointment", "ko": "임명"}, {"en": "underpay", "ko": "급여를 제대로 주지 않다"}, {"en": "underfeed", "ko": "먹을 것을 제대로 공급하지 않다"}, {"en": "cause", "ko": "대의, 명분"}, {"en": "resistant", "ko": "저항하는"}, {"en": "take a stand", "ko": "자기 방어를 위해 강하게 반격하다"}, {"en": "direct", "ko": "지시하다"}, {"en": "senior officer", "ko": "고위급 장교"}, {"en": "face", "ko": "맞서다"}, {"en": "the ranks", "ko": "일반 사병"}, {"en": "end up at", "ko": "결국 ~에 놓이게[이르게] 되다"}, {"en": "come around the corner", "ko": "모퉁이에서 나타나다"}, {"en": "doomed", "ko": "끝장난, 불운한"}, {"en": "heart-to-heart", "ko": "허심탄회한, 숨김없는"}, {"en": "dread", "ko": "몹시 두려워하다"}, {"en": "consideration", "ko": "배려, 사려"}, {"en": "run late", "ko": "늦어지다"}, {"en": "hang on to", "ko": "꽉 붙잡다, 잊지 않다"}, {"en": "be proud of", "ko": "~를 자랑스러워하다"}, {"en": "recollection", "ko": "기억"}, {"en": "abstract", "ko": "추상적인"}, {"en": "concrete", "ko": "구체적인"}, {"en": "magnitude", "ko": "중요도, 규모"}, {"en": "overwhelm", "ko": "압도하다"}, {"en": "marker", "ko": "표시"}, {"en": "relatively", "ko": "비교적"}, {"en": "per capita income", "ko": "1인당 소득"}, {"en": "reference point", "ko": "기준점"}, {"en": "elegantly", "ko": "우아하게"}, {"en": "secure", "ko": "확보하다"}, {"en": "domestic", "ko": "집안의"}, {"en": "free from need", "ko": "어려움이 없는"}, {"en": "dispose of", "ko": "~을 처분하다"}, {"en": "adopt", "ko": "입양하다"}, {"en": "complicated", "ko": "복잡한"}, {"en": "snarl", "ko": "사납게 쏘아붙이다, 으르렁거리듯 말하다"}, {"en": "devastation", "ko": "참담함, 황폐"}, {"en": "sob", "ko": "흐느껴 울다"}, {"en": "big shot", "ko": "대단한 사람, 거물"}, {"en": "indispensable", "ko": "없어서는 안 될"}, {"en": "save face", "ko": "체면을 세우다"}, {"en": "considerate", "ko": "사려 깊은"}, {"en": "genuine", "ko": "참된"}, {"en": "cashier", "ko": "수납원"}, {"en": "register", "ko": "계산대"}, {"en": "fail", "ko": "부족하다"}, {"en": "collapse", "ko": "붕괴"}, {"en": "hailstorm", "ko": "우박을 동반한 폭풍"}, {"en": "spark", "ko": "불러일으키다"}, {"en": "retreat", "ko": "퇴각하다"}, {"en": "serotonin", "ko": "세로토닌(신경 전달 물질)"}, {"en": "sunfish", "ko": "개복치"}, {"en": "trout", "ko": "송어"}, {"en": "lure", "ko": "미끼"}, {"en": "rod", "ko": "낚싯대"}, {"en": "come up against", "ko": "~에 직면하다"}, {"en": "reluctantly", "ko": "마지못해"}, {"en": "move in with ~", "ko": "집에 살러 들어가다[오다]"}, {"en": "carefree", "ko": "무책임한, 걱정이 없는"}, {"en": "preserve", "ko": "유지하다, 보존하다"}, {"en": "project", "ko": "투영하다, 투사하다"}, {"en": "ask ~ for a favor", "ko": "~에게 부탁하다"}, {"en": "narrative", "ko": "이야기"}, {"en": "on credit", "ko": "외상으로"}, {"en": "overhear", "ko": "우연히 듣다"}, {"en": "reluctant", "ko": "마지못한"}, {"en": "scale", "ko": "저울(pl.)"}, {"en": "bowed", "ko": "고개를 숙인"}, {"en": "pan", "ko": "(저울에서 무게를 달 물건을 올려놓는) 저울판"}, {"en": "amazement", "ko": "놀라움"}, {"en": "clarity", "ko": "(표현의) 명료성"}, {"en": "to a great extent", "ko": "대부분, 크게"}, {"en": "conversational", "ko": "회화체의"}, {"en": "punctuation", "ko": "구두점"}, {"en": "orderly", "ko": "질서정연한"}, {"en": "substitute", "ko": "대용하다, 바꾸다"}, {"en": "secondhand", "ko": "중고의"}, {"en": "pretend", "ko": "~인 체하다"}, {"en": "get rid of", "ko": "없애다"}, {"en": "edition", "ko": "판(版)"}, {"en": "stiff", "ko": "뻣뻣한"}, {"en": "bearing", "ko": "자세"}, {"en": "retreat", "ko": "도피"}, {"en": "dismiss", "ko": "묵살하다"}, {"en": "relief fund", "ko": "구호 기금"}, {"en": "antiwar", "ko": "반전"}, {"en": "humane", "ko": "인도적인"}, {"en": "civilian", "ko": "민간인"}, {"en": "casualty", "ko": "사상자"}, {"en": "grateful", "ko": "고마워하는"}, {"en": "customs", "ko": "세관"}, {"en": "institution", "ko": "제도, 관례"}, {"en": "civic", "ko": "시민의"}, {"en": "crowd out", "ko": "몰아내다"}, {"en": "root for", "ko": "응원하다"}, {"en": "a litter of puppies", "ko": "(뱃속의) 강아지 새끼들"}, {"en": "intensified rainfall", "ko": "집중호우"}, {"en": "adopt", "ko": "입양하다"}, {"en": "genetic", "ko": "유전적인"}, {"en": "striking", "ko": "현저한"}, {"en": "orphanage", "ko": "고아원"}, {"en": "stimulating", "ko": "격려하는"}, {"en": "retarded", "ko": "(정신적으로) 지체된"}, {"en": "boost", "ko": "증가"}, {"en": "genetics", "ko": "유전학, 유전적 특징"}, {"en": "prick", "ko": "찌르다, 쑤시다"}, {"en": "let ~ down", "ko": "~를 실망시키다"}, {"en": "spectator", "ko": "관중"}, {"en": "guts", "ko": "배짱, 용기"}, {"en": "physique", "ko": "체격"}, {"en": "clasp", "ko": "(손 따위를) 꽉 잡다"}, {"en": "muscular", "ko": "근육질의"}, {"en": "storm", "ko": "돌격하다, 돌진하다"}, {"en": "opponent", "ko": "적, 상대"}, {"en": "dive", "ko": "돌진하다, 달려들다"}, {"en": "chatter away", "ko": "재잘거리다"}, {"en": "phonetic", "ko": "음성학적인"}, {"en": "transcription", "ko": "녹취, 녹음"}, {"en": "shiver", "ko": "전율, 소름"}, {"en": "rescue", "ko": "구하다, 구조하다"}, {"en": "pick up", "ko": "더 강해지다"}, {"en": "fierce", "ko": "맹렬한, 사나운"}, {"en": "lick", "ko": "핥다"}, {"en": "grab on to", "ko": "~을 꽉 잡다"}, {"en": "demonstrate", "ko": "보여주다, 설명하다"}, {"en": "scrub", "ko": "문질러 닦다"}, {"en": "prescribed", "ko": "지시된, 처방된"}, {"en": "weather-beaten", "ko": "비바람을 맞은"}, {"en": "chore", "ko": "허드렛일"}, {"en": "thrust", "ko": "내뻗다, 밀치다"}, {"en": "unleash", "ko": "개시하다, 촉발시키다"}, {"en": "vicious", "ko": "맹렬한, 사나운"}, {"en": "avert", "ko": "피하다"}, {"en": "banishment", "ko": "추방"}, {"en": "furious", "ko": "격노한"}, {"en": "roaring", "ko": "시끄러운, 으르렁거리는"}, {"en": "vice versa", "ko": "거꾸로, 반대로"}, {"en": "neuroeconomics", "ko": "신경경제학"}, {"en": "cognitive load", "ko": "인지 부하"}, {"en": "impulsive", "ko": "충동적인"}, {"en": "outgoing", "ko": "외향적인"}, {"en": "resume", "ko": "다시 시작하다"}];
+
+var QUIZ_ID = "longreading-vocab-lv2-0707";
+var QUIZ_TITLE = "모의고사 단어시험 Lv.2 · 장문독해";
+
+/* ══════ 문제 생성 ══════ */
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* 영역: 프린트 순서 그대로 50개씩 분할 */
+var SEC_SIZE = 50;
+var SECTIONS = [];
+for (var s = 0; s < WORDS.length; s += SEC_SIZE) {
+  SECTIONS.push({ from: s + 1, to: Math.min(s + SEC_SIZE, WORDS.length), words: WORDS.slice(s, s + SEC_SIZE) });
+}
+var selectedSec = -1;
+
+function buildQuestions(sectionWords) {
+  return sectionWords.map(function (w) {
+    var ek = Math.random() < 0.5; // true: 영→한
+    var answer = ek ? w.ko : w.en;
+    var pool = WORDS.filter(function (o) {
+      if (o === w) return false;
+      if (o.en.toLowerCase() === w.en.toLowerCase()) return false; // 같은 영단어(=같은 뜻) 제외
+      if (o.ko === w.ko) return false;                             // 같은 한글 뜻 제외
+      return true;
+    }).map(function (o) { return ek ? o.ko : o.en; });
+    var seen = {}; var uniq = [];
+    shuffle(pool).forEach(function (p) { if (!seen[p]) { seen[p] = 1; uniq.push(p); } });
+    var options = shuffle([answer].concat(uniq.slice(0, 3)));
+    return { ek: ek, q: ek ? w.en : w.ko, answer: answer, options: options, en: w.en, ko: w.ko };
+  });
+}
+
+/* ══════ 상태 ══════ */
+var studentName = "";
+var QS = [];
+var cur = 0;
+var picked = [];      // index of chosen option per question
+var startTime = 0;
+var timerIv = null;
+var locked = false;
+
+var $ = function (id) { return document.getElementById(id); };
+
+$("start-sub").textContent = "전체 " + WORDS.length + "단어 · " + SECTIONS.length + "개 영역 · 영한/한영 혼합 4지선다";
+
+var secGrid = $("sec-grid");
+SECTIONS.forEach(function (sec, i) {
+  var b = document.createElement("button");
+  b.className = "sec-btn";
+  b.innerHTML = (i + 1) + "영역<span class=\"range\">" + sec.from + "~" + sec.to + "</span>";
+  b.addEventListener("click", function () {
+    selectedSec = i;
+    Array.prototype.forEach.call(secGrid.children, function (c, j) {
+      c.className = "sec-btn" + (j === i ? " on" : "");
+    });
+    updateStartBtn();
+  });
+  secGrid.appendChild(b);
+});
+
+function updateStartBtn() {
+  $("start-btn").disabled = $("name-input").value.trim().length === 0 || selectedSec < 0;
+}
+
+$("name-input").addEventListener("input", updateStartBtn);
+$("name-input").addEventListener("keydown", function (e) {
+  if (e.key === "Enter" && this.value.trim() && selectedSec >= 0) startQuiz();
+});
+$("start-btn").addEventListener("click", startQuiz);
+
+function secLabel() {
+  var sec = SECTIONS[selectedSec];
+  return (selectedSec + 1) + "영역 (" + sec.from + "~" + sec.to + ")";
+}
+
+function startQuiz() {
+  studentName = $("name-input").value.trim();
+  if (!studentName || selectedSec < 0) return;
+  QS = buildQuestions(SECTIONS[selectedSec].words);
+  picked = new Array(QS.length);
+  cur = 0;
+  startTime = Date.now();
+  _engfitSent = false;
+  $("start-screen").classList.add("hidden");
+  $("result-screen").classList.add("hidden");
+  $("quiz-screen").classList.remove("hidden");
+  if (timerIv) clearInterval(timerIv);
+  timerIv = setInterval(function () {
+    var s = Math.floor((Date.now() - startTime) / 1000);
+    $("timer").textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  }, 1000);
+  render();
+}
+
+var CIRCLED = ["①", "②", "③", "④"];
+var ACC = { ek: "#3b82f6", ke: "#f97316" };
+
+function render() {
+  var q = QS[cur];
+  var acc = q.ek ? ACC.ek : ACC.ke;
+  $("prog-text").textContent = (cur + 1) + " / " + QS.length;
+  $("pfill").style.width = ((cur) / QS.length * 100) + "%";
+  $("qno").textContent = "Q" + (cur + 1);
+  $("qno").style.color = acc;
+  var qt = $("qtype");
+  qt.textContent = q.ek ? "영→한" : "한→영";
+  qt.style.color = acc;
+  qt.style.background = acc + "22";
+  var qw = $("qword");
+  qw.textContent = q.q;
+  qw.className = "qword " + (q.ek ? "ek en" : "ke");
+  var box = $("choices");
+  box.innerHTML = "";
+  q.options.forEach(function (opt, i) {
+    var b = document.createElement("button");
+    b.className = "choice" + (picked[cur] === i ? (q.ek ? " sel-ek" : " sel-ke") : "");
+    var num = document.createElement("span");
+    num.className = "cnum"; num.textContent = CIRCLED[i];
+    var tx = document.createElement("span");
+    tx.className = "ctext " + (q.ek ? "ko" : "en");
+    tx.textContent = opt;
+    b.appendChild(num); b.appendChild(tx);
+    b.addEventListener("click", function () { pick(i); });
+    box.appendChild(b);
+  });
+  $("prev-btn").style.visibility = cur === 0 ? "hidden" : "visible";
+  window.scrollTo(0, 0);
+}
+
+function pick(i) {
+  if (locked) return; locked = true;
+  picked[cur] = i;
+  render(); // show selection highlight
+  setTimeout(function () {
+    locked = false;
+    if (cur < QS.length - 1) { cur++; render(); }
+    else finish();
+  }, 250);
+}
+
+$("prev-btn").addEventListener("click", function () {
+  if (locked || cur === 0) return;
+  cur--; render();
+});
+
+document.addEventListener("keydown", function (e) {
+  if ($("quiz-screen").classList.contains("hidden")) return;
+  if (e.key >= "1" && e.key <= "4") pick(Number(e.key) - 1);
+  else if (e.key === "ArrowLeft" && cur > 0 && !locked) { cur--; render(); }
+});
+
+/* ══════ 결과 ══════ */
+var lastResult = null;
+
+function finish() {
+  clearInterval(timerIv);
+  var sec = Math.round((Date.now() - startTime) / 1000);
+  var correct = 0, wrongNos = [], wrongs = [], detail = [];
+  QS.forEach(function (q, i) {
+    var chosen = picked[i] === undefined ? "" : q.options[picked[i]];
+    var ok = chosen === q.answer;
+    if (ok) correct++;
+    else { wrongNos.push(i + 1); wrongs.push({ no: i + 1, q: q, chosen: chosen }); }
+    detail.push({ no: i + 1, ok: ok, chosen: chosen, answer: q.answer });
+  });
+  lastResult = { correct: correct, total: QS.length, sec: sec, wrongs: wrongs, wrongNos: wrongNos };
+
+  $("quiz-screen").classList.add("hidden");
+  $("result-screen").classList.remove("hidden");
+  $("r-name").textContent = studentName + " · " + secLabel() + " · " + new Date().toLocaleDateString("ko-KR");
+  $("r-score").textContent = correct + " / " + QS.length;
+  $("r-sub").textContent = Math.round(correct / QS.length * 100) + "% · " + fmtTime(sec);
+
+  var wl = $("wrong-list");
+  wl.innerHTML = "";
+  if (wrongs.length === 0) {
+    $("wrong-title").textContent = "";
+    var d = document.createElement("div");
+    d.className = "rcard allok";
+    d.textContent = "🎉 만점! 전부 정답이에요!";
+    wl.appendChild(d);
+  } else {
+    $("wrong-title").textContent = "❌ 오답 확인 (" + wrongs.length + "개)";
+    wrongs.forEach(function (w) {
+      var d = document.createElement("div");
+      d.className = "witem";
+      var qspan = w.q.ek ? '<span class="en">' + esc(w.q.en) + '</span>' : esc(w.q.ko);
+      var mySpan = w.chosen === "" ? "(무응답)" : wrapLang(w.chosen, !w.q.ek);
+      d.innerHTML = '<div class="wq">Q' + w.no + '. ' + qspan + '</div>' +
+        '<div class="wrow">내 답: <span class="my">' + mySpan + '</span><br>' +
+        '정답: <span class="ans">' + wrapLang(w.q.answer, !w.q.ek) + '</span>' +
+        ' &nbsp;<span style="color:#64748b">(' + '<span class="en">' + esc(w.q.en) + '</span> = ' + esc(w.q.ko) + ')</span></div>';
+      wl.appendChild(d);
+    });
+  }
+  window.scrollTo(0, 0);
+
+  engfitSubmitWithStatus({
+    quizId: QUIZ_ID,
+    quizTitle: QUIZ_TITLE + " — " + secLabel(),
+    student: studentName,
+    score: correct,
+    total: QS.length,
+    wrong: wrongNos,
+    durationSec: sec,
+    detail: detail
+  });
+}
+
+function wrapLang(text, isEn) {
+  return isEn ? '<span class="en">' + esc(text) + '</span>' : esc(text);
+}
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function fmtTime(sec) {
+  return Math.floor(sec / 60) + "분 " + (sec % 60) + "초";
+}
+
+function buildKakaoText() {
+  var r = lastResult;
+  var date = new Date().toLocaleDateString("ko-KR");
+  var t = "[EngFit " + QUIZ_TITLE + " — " + secLabel() + "]\n";
+  t += studentName + " | " + date + "\n";
+  t += r.correct + "/" + r.total + " (" + Math.round(r.correct / r.total * 100) + "%) | " + fmtTime(r.sec) + "\n";
+  if (r.wrongs.length) {
+    t += "\n[오답 " + r.wrongs.length + "개]\n";
+    r.wrongs.forEach(function (w, i) { t += (i + 1) + ". " + w.q.en + " = " + w.q.ko + "\n"; });
+  } else {
+    t += "\n만점! 전부 정답!";
+  }
+  return t;
+}
+
+$("kakao-btn").addEventListener("click", function () {
+  var msg = buildKakaoText();
+  var btn = $("kakao-btn");
+  function done() { btn.textContent = "✓ 복사 완료! 카톡에 붙여넣기 하세요"; btn.classList.add("done"); }
+  function fallback() {
+    var ta = $("copy-area");
+    ta.value = msg;
+    ta.classList.remove("hidden");
+    ta.focus(); ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) {
+      btn.textContent = "아래 내용을 길게 눌러 복사하세요";
+    }
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(msg).then(done).catch(fallback);
+  } else fallback();
+});
+
+$("retry-btn").addEventListener("click", function () {
+  $("result-screen").classList.add("hidden");
+  $("start-screen").classList.remove("hidden");
+  $("kakao-btn").textContent = "📋 결과 복사해서 카톡으로 보내기";
+  $("kakao-btn").classList.remove("done");
+  $("copy-area").classList.add("hidden");
+  window.scrollTo(0, 0);
+});
+</script>
+</body>
+</html>
