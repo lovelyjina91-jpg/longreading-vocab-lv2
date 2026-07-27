@@ -202,14 +202,34 @@ for (var s = 0; s < WORDS.length; s += SEC_SIZE) {
 }
 var selectedSec = -1;
 
+/* 뜻(ko)이 일부라도 겹치는 단어는 보기에서 제외 — 정답 2개 방지 */
+function koTokens(ko) {
+  var out = [];
+  ko.split(/[,;\u00b7\/()\[\]]/).forEach(function (t) {
+    t = t.replace(/~/g, "").replace(/\s+/g, " ").trim();
+    if (t) out.push(t);
+  });
+  return out;
+}
+function koOverlap(a, b) {
+  if (a === b) return true;
+  var ta = koTokens(a), tb = koTokens(b);
+  for (var i = 0; i < ta.length; i++) {
+    for (var j = 0; j < tb.length; j++) {
+      if (ta[i] === tb[j]) return true;
+    }
+  }
+  return false;
+}
+
 function buildQuestions(sectionWords) {
   return sectionWords.map(function (w) {
     var ek = Math.random() < 0.5; // true: 영→한
     var answer = ek ? w.ko : w.en;
     var pool = WORDS.filter(function (o) {
       if (o === w) return false;
-      if (o.en.toLowerCase() === w.en.toLowerCase()) return false; // 같은 영단어(=같은 뜻) 제외
-      if (o.ko === w.ko) return false;                             // 같은 한글 뜻 제외
+      if (o.en.toLowerCase() === w.en.toLowerCase()) return false; // 같은 영단어 제외
+      if (koOverlap(o.ko, w.ko)) return false; // 뜻이 일부라도 겹치면 제외 (정답 2개 방지)
       return true;
     }).map(function (o) { return ek ? o.ko : o.en; });
     var seen = {}; var uniq = [];
